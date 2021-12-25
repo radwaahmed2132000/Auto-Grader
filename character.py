@@ -6,12 +6,16 @@ def make_square(char):          #makes the character into a square by padding
     s = max(char.shape)
     f = np.zeros((s,s),np.uint8)
     ax,ay = (s - char.shape[1])//2,(s - char.shape[0])//2
-    f[ay:char.shape[0]+ay,ax:ax+char.shape[1]] = char
-    image = cv2.copyMakeBorder(f,14, 14, 14, 14, cv2.BORDER_CONSTANT)
+    f[ay:char.shape[0]+ay, ax:ax+char.shape[1]] = char
+    image = cv2.copyMakeBorder(f,3, 3, 3, 3, cv2.BORDER_CONSTANT)
     return image
 
 
-img = cv2.imread('1.png')
+def dilate(img):
+    dilated = cv2.dilate(img.copy(), None, iterations= 1)
+    return dilated
+
+img = cv2.imread('test.jpeg')
 img = imutils.resize(img, width=500)
 
 #Thresholding:
@@ -28,11 +32,15 @@ for i, c in enumerate(cnts):
     x,y,w,h = cv2.boundingRect(c)
     character = img_t[y:y+h, x:x+w]
     character = cv2.resize(make_square(character), (28, 28))
+    #character = dilate(character)
     characters.append(character)
-    cv2.imwrite(f'characters/Char{i}.jpg', character ) 
     cv2.rectangle(img_t, (x, y), (x + w, y + h), (100,0,0), 2)
+
+characters.reverse()
+for i, char in enumerate(characters):
+    cv2.imwrite(f'characters/Char{i}.jpg', char ) 
+
 
 img = cv2.bitwise_and(img, img, mask=img_t)
 #cv2.imshow('Thresholded Image', img_t )
 #cv2.waitKey()
-

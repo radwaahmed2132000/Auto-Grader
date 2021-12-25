@@ -5,23 +5,43 @@ import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 from character import characters
 import numpy as np 
+from tqdm import tqdm
+
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters 
 input_size = 784 # 28x28
-hidden_size = 500 
-num_classes = 10
+hidden_size = 700
+num_classes = 47
 num_epochs = 2
 batch_size = 100
 learning_rate = 0.001
-saved = True
+saved = False
 
 
-# MNIST dataset 
-train_dataset = torchvision.datasets.MNIST(root='./data', train=True, transform=transforms.ToTensor(), download=True)
-test_dataset = torchvision.datasets.MNIST(root='./data', train=False, transform=transforms.ToTensor())
+# EMNIST dataset 
+preprocessing = transforms.Compose([transforms.ToTensor(), 
+transforms.Lambda(lambda img: transforms.functional.rotate(img, angle=90)),
+transforms.RandomVerticalFlip(p=1)])
+
+train_dataset = torchvision.datasets.EMNIST(root='./data',split='balanced', train=True, transform=preprocessing, download=True)
+test_dataset = torchvision.datasets.EMNIST(root='./data', split='balanced', train=False, transform=preprocessing)
+
+lexicon = dict([(0,'1'),(1,'1'), (2,'2'),(3,'3'),(4,'4'),(5,'5'),(6,'6'),(7,'7'),(8,'8'),(9,'9'),(10,'A'),(11,'B'),(12,'C'),(13,'D'),(14,'E'), (15,'F'),(33,'x')])
+
+for char in lexicon:
+    if char == 0:
+        test_filter = (test_dataset.targets == char )
+        train_filter = (train_dataset.targets == char )
+    else:
+        test_filter = test_filter | (test_dataset.targets == char )
+        train_filter = train_filter | (train_dataset.targets == char )
+
+train_dataset.data, train_dataset.targets = train_dataset.data[train_filter], train_dataset.targets[train_filter]
+test_dataset.data, test_dataset.targets = test_dataset.data[test_filter], test_dataset.targets[test_filter]
+
 
 # Data loader: now they are converted to batches of [100, 1, 28, 28]
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
@@ -31,8 +51,9 @@ examples = iter(test_loader)
 example_data, example_targets = examples.next()     #hands on the first batch
 
 for i in range(6):
-    plt.subplot(2,3,i+1)
-    plt.imshow(example_data[i].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
+    ax = plt.subplot(2,3,i+1)
+    ax.title.set_text(example_targets[i+6])
+    plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
 #plt.show()
 
 
@@ -56,7 +77,7 @@ class NeuralNet(nn.Module):
     def train(self, num_epochs, train_loader):
         num_batches = len(train_loader)
         for epoch in range(num_epochs):
-            for i, (images, labels) in enumerate(train_loader):  #each batch is a tuple of images and their corresponding labels.
+            for i, (images, labels) in enumerate(tqdm(train_loader)):  #each batch is a tuple of images and their corresponding labels.
                 
                 images = nn.Flatten()(images).to(device)        # from [100, 1, 28, 28] to [100, 784]
                 labels = labels.to(device)                      #[100]
@@ -70,8 +91,8 @@ class NeuralNet(nn.Module):
                 loss.backward()                                #accumulate all the gradients due to the current batch
                 self.optimizer.step()                          #update the network's weights and biases
                 
-                if (i+1) % 100 == 0:                            #every one hundred batches
-                    print (f'Epoch [{epoch+1}/{num_epochs}], Batch [{i+1}/{num_batches}], Loss: {loss.item():.4f}')
+                #if (i+1) % 100 == 0:                            #every one hundred batches
+                #    print (f'Epoch [{epoch+1}/{num_epochs}], Batch [{i+1}/{num_batches}], Loss: {loss.item():.4f}')
     
     def test(self, test_loader):
         with torch.no_grad():
@@ -83,7 +104,7 @@ class NeuralNet(nn.Module):
                 predicted = logits.argmax(1)                    #the highest logit is also the highest softmax probability. This has shape (100,)
                 n_correct += (predicted == labels).sum().item()
 
-            acc = 100.0 * n_correct / 10000
+            acc = 100.0 * n_correct / (len(test_loader) * 100)
             print(f'Accuracy: {acc} %')
 
 
@@ -104,8 +125,12 @@ model.test(test_loader)
 # Save the model
 torch.save(model.state_dict(), 'mnist_ffn.pth')
 
+magic_word = []
+
 for char in characters:
     char = torch.from_numpy((char/255)).reshape(-1, 784).float()
     prediction = model(char).argmax()
-    print(prediction)
+    magic_word.append(lexicon[prediction.item()])
 
+magic_word = ''.join(magic_word)
+print(magic_word)
