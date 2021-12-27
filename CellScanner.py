@@ -5,7 +5,7 @@ from PIL import Image
 import pytesseract
 from Hexlassifier import predict_hex
 from PrintClassifier import predict_print
-
+from CellExtractor import get_cells
 #makes the character into a square by padding the contour
 def make_square(char, p):          
     s = max(char.shape)
@@ -17,9 +17,9 @@ def make_square(char, p):
 
 def cell_processing(cell):
     #Thresholding:
-    gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
-    T, cell_t = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
-
+    #gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
+    #T, cell_t = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
+    cell_t=cell
     #Finding contours (only need the external contour):
     cnts, _ = cv2.findContours(cell_t, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     characters = []
@@ -39,7 +39,10 @@ def cell_processing(cell):
 
 
 #Reading and resizing the cell
-cell = cv2.imread('./Samples/Digits.png')
+table = cv2.imread('./10.jpeg')
+cells = get_cells(table)
+#the following should be a loop.
+cell = cells[3][4]
 cell = imutils.resize(cell, width=500)
 cell, cell_t, characters = cell_processing(cell)
 
@@ -48,12 +51,14 @@ cell = cv2.bitwise_and(cell, cell, mask=cell_t)
 cv2.imshow('Thresholded Image', cell_t )
 cv2.waitKey()
 
-handwritten = False
+handwritten = True
 
 if(handwritten):
     cell_content = predict_hex(characters, saved=True)
 else:
     cell_content = predict_print(characters, saved=True)
 
-cell_content = pytesseract.image_to_string(Image.open('./Samples/Digits.png'))
-print(cell_content)
+
+
+Google = pytesseract.image_to_string(cell)
+print(Google)

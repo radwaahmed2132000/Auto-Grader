@@ -12,10 +12,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters 
 input_size = 784 # 28x28
-hidden_size = 450
+hidden_size = 350
 num_classes = 47
-num_epochs = 2
-batch_size = 250
+num_epochs = 3
+batch_size = 100
 learning_rate = 0.001
 lexicon = dict([(0,'0'),(1,'1'), (2,'2'),(3,'3'),(4,'4'),(5,'5'),(6,'6'),(7,'7'),(8,'8'),(9,'9'),(10,'A'),(11,'B'),(12,'C'),(13,'D'),(14,'E'), (15,'F'),(33,'x')])
 
@@ -52,7 +52,7 @@ def preprocess_dataset():
         ax = plt.subplot(2,3,i+1)
         ax.title.set_text(example_targets[i+6])
         plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
-    plt.show()
+    #plt.show()
     return train_loader, test_loader
 
 
