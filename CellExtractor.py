@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PageExtractor import getPageWarped
+
 
 def transition_per_row(img):
     trans_array = []
@@ -34,6 +36,7 @@ def transition_per_column(img):
         trans_array.append(trans)
     trans_median = np.median(trans_array)
     return int(trans_median)
+
 
 def get_locations_column(img, num):
     locations_array = []
@@ -82,80 +85,81 @@ def get_locations_row(img, num):
             median_location.append(np.median(locations_array[:, k]))
     return np.array(median_location, dtype=np.int32)
 
+
 def remove_border(img_with_border):
-   img_with_border_v = cv2.erode(img_with_border, np.ones(
-      (15, 1), np.uint8), iterations=1)  # !Parameter
-   img_with_border_v = cv2.dilate(img_with_border_v, np.ones(
-      (1, 5), np.uint8), iterations=1)  # !Parameter
-   img_with_border_v = cv2.erode(img_with_border_v, np.ones(
-      (1, 4), np.uint8), iterations=1)  # !Parameter
-   img_with_border_h = cv2.erode(img_with_border, np.ones(
-      (1, 15), np.uint8), iterations=1)  # !Parameter
-   img_with_border_h = cv2.dilate(img_with_border_h, np.ones(
-      (5, 1), np.uint8), iterations=1)  # !Parameter
-   img_with_border_h = cv2.erode(img_with_border_h, np.ones(
-      (3, 1), np.uint8), iterations=1)  # !Parameter
-   img_without_border = img_with_border.copy()
-   # upper border
-   for j in range(img_without_border.shape[1]):
-      i = 0
-      while(i < img_without_border.shape[0] and img_with_border_h[i][j] != 0):
-         img_without_border[i][j] = 0
-         i += 1
-   # lower border
-   for j in range(img_without_border.shape[1]):
-      i = img_without_border.shape[0]-1
-      while(i >= 0 and img_with_border_h[i][j] != 0):
-         img_without_border[i][j] = 0
-         i -= 1
-   # left border
-   for i in range(img_without_border.shape[0]):
-      j = 0
-      while(j < img_without_border.shape[1] and img_with_border_v[i][j] != 0):
-         img_without_border[i][j] = 0
-         j += 1
-   # right border
-   for i in range(img_without_border.shape[0]):
-      j = img_without_border.shape[1]-1
-      while(j >= 0 and img_with_border_v[i][j] != 0):
-         img_without_border[i][j] = 0
-         j -= 1
-   # border final clean
-   for j in range(img_without_border.shape[1]):
-      for i in range(3):
-         img_without_border[i][j] = 0
-   for j in range(img_without_border.shape[1]):
-      for i in range(img_without_border.shape[0]-3, img_without_border.shape[0]):
-         img_without_border[i][j] = 0
-   for i in range(img_without_border.shape[0]):
-      for j in range(3):
-         img_without_border[i][j] = 0
-   for i in range(img_without_border.shape[0]):
-      for j in range(img_without_border.shape[1]-3, img_without_border.shape[1]):
-         img_without_border[i][j] = 0
-   img_without_border = cv2.dilate(
-      img_without_border, np.ones((1, 2), np.uint8), iterations=1)
-   img_without_border = cv2.erode(
-      img_without_border, np.ones((1, 2), np.uint8), iterations=1)
-   img_without_border = cv2.dilate(
-      img_without_border, np.ones((2, 1), np.uint8), iterations=1)
-   img_without_border = cv2.erode(
-      img_without_border, np.ones((2, 1), np.uint8), iterations=1)
-   return img_without_border
+    img_with_border_v = cv2.erode(img_with_border, np.ones(
+        (15, 1), np.uint8), iterations=2)  # !Parameter
+    img_with_border_v = cv2.dilate(img_with_border_v, np.ones(
+        (1, 5), np.uint8), iterations=2)  # !Parameter
+    img_with_border_v = cv2.erode(img_with_border_v, np.ones(
+        (1, 4), np.uint8), iterations=2)  # !Parameter
+    img_with_border_h = cv2.erode(img_with_border, np.ones(
+        (1, 15), np.uint8), iterations=2)  # !Parameter
+    img_with_border_h = cv2.dilate(img_with_border_h, np.ones(
+        (5, 1), np.uint8), iterations=2)  # !Parameter
+    img_with_border_h = cv2.erode(img_with_border_h, np.ones(
+        (3, 1), np.uint8), iterations=2)  # !Parameter
+    img_without_border = img_with_border.copy()
+    # upper border
+    for j in range(img_without_border.shape[1]):
+        i = 0
+        while(i < img_without_border.shape[0] and img_with_border_h[i][j] != 0):
+            img_without_border[i][j] = 0
+            i += 1
+    # lower border
+    for j in range(img_without_border.shape[1]):
+        i = img_without_border.shape[0]-1
+        while(i >= 0 and img_with_border_h[i][j] != 0):
+            img_without_border[i][j] = 0
+            i -= 1
+    # left border
+    for i in range(img_without_border.shape[0]):
+        j = 0
+        while(j < img_without_border.shape[1] and img_with_border_v[i][j] != 0):
+            img_without_border[i][j] = 0
+            j += 1
+    # right border
+    for i in range(img_without_border.shape[0]):
+        j = img_without_border.shape[1]-1
+        while(j >= 0 and img_with_border_v[i][j] != 0):
+            img_without_border[i][j] = 0
+            j -= 1
+    # border final clean
+    for j in range(img_without_border.shape[1]):
+        for i in range(3):
+            img_without_border[i][j] = 0
+    for j in range(img_without_border.shape[1]):
+        for i in range(img_without_border.shape[0]-3, img_without_border.shape[0]):
+            img_without_border[i][j] = 0
+    for i in range(img_without_border.shape[0]):
+        for j in range(3):
+            img_without_border[i][j] = 0
+    for i in range(img_without_border.shape[0]):
+        for j in range(img_without_border.shape[1]-3, img_without_border.shape[1]):
+            img_without_border[i][j] = 0
+    img_without_border = cv2.dilate(
+        img_without_border, np.ones((1, 2), np.uint8), iterations=0)  # !parameter
+    img_without_border = cv2.erode(
+        img_without_border, np.ones((1, 2), np.uint8), iterations=0)  # !parameter
+    img_without_border = cv2.dilate(
+        img_without_border, np.ones((2, 1), np.uint8), iterations=0)  # !parameter
+    img_without_border = cv2.erode(
+        img_without_border, np.ones((2, 1), np.uint8), iterations=0)  # !parameter
+    return img_without_border
 
 
 def get_cells(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_binary = cv2.adaptiveThreshold(gray, 255,
-                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 4)
+                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)  # !parameter
     kernal_width = 3  # !Parameter
-    iterations = 8  # !Parameter
+    iterations = 10  # !Parameter
     kernel = np.ones((1, kernal_width), np.uint8)
     img_horizontal = cv2.erode(img_binary, kernel, iterations=iterations)
     img_horizontal = cv2.dilate(img_horizontal, kernel, iterations=iterations)
     num_rows = transition_per_column(img_horizontal)
     kernal_height = 3  # !Parameter
-    iterations = 8  # !Parameter
+    iterations = 10  # !Parameter
     kernel = np.ones((kernal_height, 1), np.uint8)
     img_vertical = cv2.erode(img_binary, kernel, iterations=iterations)
     img_vertical = cv2.dilate(img_vertical, kernel, iterations=iterations)
@@ -224,16 +228,25 @@ def get_cells(img):
 
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
-            cells_content[i][j] = cv2.threshold(
-                cells_content[i][j], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+            cells_content[i][j] = cv2.adaptiveThreshold(
+                cells_content[i][j], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 15, 7)  # !parameter
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
             cells_content[i][j] = remove_border(cells_content[i][j])
     return cells_content
 
-img = cv2.imread('./8.jpeg')
-cells = get_cells(img)
 
-#plt.figure(figsize=(10, 10))
-#plt.imshow(cells[0][5], cmap='gray')
-#plt.show()
+# img = cv2.imread("TestCases/4_3.jpeg")
+# plt.figure(figsize=(10, 10))
+# plt.imshow(img, cmap='gray')
+# plt.show()
+
+# cropped = getPageWarped(img)[5]
+# plt.figure(figsize=(10, 10))
+# plt.imshow(cropped, cmap='gray')
+# plt.show()
+
+# cells = get_cells(cropped)
+# plt.figure(figsize=(10, 10))
+# plt.imshow(cells[5][5], cmap='gray')
+# plt.show()
