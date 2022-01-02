@@ -117,4 +117,5 @@ def predict_print(characters, saved=True):
         magic_word.append(lexicon[prediction.item()])
 
     magic_word = ''.join(magic_word)
-    print(magic_word)
+    #print(magic_word)
+    return magic_word

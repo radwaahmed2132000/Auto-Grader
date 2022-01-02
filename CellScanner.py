@@ -18,52 +18,56 @@ def make_square(char, p):
     image = cv2.copyMakeBorder(f, p, p, p, p, cv2.BORDER_CONSTANT)
     return image
 
-
 def cell_processing(cell):
-    # Thresholding:
-    #gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
-    #T, cell_t = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV)
-    cell_t = cell
-    # Finding contours (only need the external contour):
-    cnts, _ = cv2.findContours(
-        cell_t, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    #Finding contours (only need the external contour):
+    cnts, _ = cv2.findContours(cell, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     characters = []
     for i, c in enumerate(cnts):
-        x, y, w, h = cv2.boundingRect(c)
-        character = cell_t[y:y+h, x:x+w]
+        x,y,w,h = cv2.boundingRect(c)
+        character = cell[y:y+h, x:x+w]
         character = cv2.resize(make_square(character, 6), (28, 28))
-        characters.append((character, x))
-        cv2.rectangle(cell_t, (x, y), (x + w, y + h), (100, 0, 0), 2)
+        characters.append((character, x, w * h))
+        cv2.rectangle(cell, (x, y), (x + w, y + h), (100,0,0), 2)
+    if(len(characters) != 0):
+        max_area = max(characters,key=lambda by_area:by_area[2])[2]          # the area of the larget contour
+        characters = [c for c in characters if c[2] > 0.2 * max_area]        #make 0.2 bigger to be more restrictive.
+        characters.sort(key=lambda by_x: by_x[1])
+        characters = [c[0] for c in characters]
 
-    characters.sort(key=lambda by_x: by_x[1])
-    characters = [c[0] for c in characters]
-    # Writing the found contour into a folder
-    for i, char in enumerate(characters):
-        cv2.imwrite(f'ScannedCharacters/Char{i}.jpg', char)
-    return cell, cell_t, characters
-
+    return characters
 
 # Reading and resizing the cell
 table_with_background = cv2.imread('TestCases/4_3.jpeg')
 table = getPageWarped(table_with_background)[5]
 cells = get_cells(table)
+
 # the following should be a loop.
-cell = cells[5][5]
-cell = imutils.resize(cell, width=500)
-cell, cell_t, characters = cell_processing(cell)
+rows = len(cells)
+columns = len(cells[0])
+excel = []
 
-# Displaying them
-cell = cv2.bitwise_and(cell, cell, mask=cell_t)
-cv2.imshow('Thresholded Image', cell_t)
-cv2.waitKey()
+for i in range(0, rows):
+    excel_row = []
+    for j in range(0, columns):
+        cell = cells[i][j]
+        cell = imutils.resize(cell, width=500)
+        characters = cell_processing(cell)
 
-handwritten = False
+        #Writing the found contour into a folder
+        #for i, char in enumerate(characters):
+        #    cv2.imwrite(f'ScannedCharacters/Char{i}{j}.jpg', char )
+        cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
 
-if(handwritten):
-    cell_content = predict_hex(characters, saved=True)
-else:
-    cell_content = predict_print(characters, saved=True)
+        handwritten = False
+        if(handwritten):
+         cell_content = predict_hex(characters, saved=True) if characters else ''
+        else:
+         cell_content = predict_print(characters, saved=True) if characters else ''
+        #Google = pytesseract.image_to_string(cell)
+        #print(Google)
 
+        excel_row.append(cell_content)
+    excel.append(excel_row)
 
-Google = pytesseract.image_to_string(cell)
-print(Google)
+       
+print(np.array(excel))

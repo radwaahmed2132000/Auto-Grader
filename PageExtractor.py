@@ -104,9 +104,9 @@ def getPageWarped(img, thresh1=180):
 
     # Seventh: Find the biggest contour.
     biggestContour, maxArea = getBiggestContour(contours)
-    print('Max Area: ', maxArea)
-    print('Total Area:', imgHeight*imgWidth)
-    print('Condition: ',biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth)
+    # print('Max Area: ', maxArea)
+    # print('Total Area:', imgHeight*imgWidth)
+    # print('Condition: ',biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth)
 
     if biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth:
         biggestContour= reorderPoints(biggestContour)

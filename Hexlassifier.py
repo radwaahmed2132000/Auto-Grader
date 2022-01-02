@@ -25,7 +25,7 @@ def preprocess_dataset():
     transforms.Lambda(lambda img: transforms.functional.rotate(img, angle=90)),
     transforms.RandomVerticalFlip(p=1)])
 
-    train_dataset = torchvision.datasets.EMNIST(root='./data',split='balanced', train=True, transform=preprocessing, download=True)
+    train_dataset = torchvision.datasets.EMNIST(root='./data',split='balanced', train=True, transform=preprocessing, download=False)
     test_dataset = torchvision.datasets.EMNIST(root='./data', split='balanced', train=False, transform=preprocessing)
 
 
@@ -129,5 +129,5 @@ def predict_hex(characters, saved=True):
         magic_word.append(lexicon[prediction.item()])
 
     magic_word = ''.join(magic_word)
-    print(magic_word)
+    #print(magic_word)
     return magic_word
