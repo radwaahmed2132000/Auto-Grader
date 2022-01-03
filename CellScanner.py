@@ -7,6 +7,7 @@ from Hexlassifier import predict_hex
 from PrintClassifier import predict_print
 from CellExtractor import get_cells
 from PageExtractor import getPageWarped
+import xlwt
 # makes the character into a square by padding the contour
 
 
@@ -36,38 +37,53 @@ def cell_processing(cell):
 
     return characters
 
-# Reading and resizing the cell
-table_with_background = cv2.imread('TestCases/4_3.jpeg')
-table = getPageWarped(table_with_background)[5]
-cells = get_cells(table)
-
 # the following should be a loop.
-rows = len(cells)
-columns = len(cells[0])
-excel = []
+def get_excel(cells, cells_for_google,google=False):
+    rows = len(cells)
+    columns = len(cells[0])
+    excel = []
+    excel_google=[]
+    for i in range(0, rows):
+        excel_row = []
+        excel_google_row = []
+        for j in range(0, columns):
+            cell = cells[i][j]
+            cell = imutils.resize(cell, width=500)
+            characters = cell_processing(cell)
 
-for i in range(0, rows):
-    excel_row = []
-    for j in range(0, columns):
-        cell = cells[i][j]
-        cell = imutils.resize(cell, width=500)
-        characters = cell_processing(cell)
+            #Writing the found contour into a folder
+            #for i, char in enumerate(characters):
+            #    cv2.imwrite(f'ScannedCharacters/Char{i}{j}.jpg', char )
+            cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
 
-        #Writing the found contour into a folder
-        #for i, char in enumerate(characters):
-        #    cv2.imwrite(f'ScannedCharacters/Char{i}{j}.jpg', char )
-        cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
+            handwritten = False
+            if(handwritten):
+                cell_content = predict_hex(characters, saved=True) if characters else ''
+            else:
+                cell_content = predict_print(characters, saved=True) if characters else ''
+            #?(For windows)pytesseract.pytesseract.tesseract_cmd =r'C:\Users\mohamed saad\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+            cell_content_google = pytesseract.image_to_string(cells_for_google[i][j]) if google else ''
+            excel_row.append(cell_content+'\n')
+            excel_google_row.append(cell_content_google)
+        excel_google.append(excel_google_row)
+        excel.append(excel_row)
 
-        handwritten = False
-        if(handwritten):
-         cell_content = predict_hex(characters, saved=True) if characters else ''
-        else:
-         cell_content = predict_print(characters, saved=True) if characters else ''
-        #Google = pytesseract.image_to_string(cell)
-        #print(Google)
+    #create excel file from the 2d array excel
+    rows=len(excel)
+    columns=len(excel[0])
+    excel_file = xlwt.Workbook()
+    sheet = excel_file.add_sheet('Ours')
+    sheet_google = excel_file.add_sheet('Google')
 
-        excel_row.append(cell_content)
-    excel.append(excel_row)
+    for i in range(0, rows):
+        for j in range(0, columns):
+            sheet.write(i, j, excel[i][j])
+            sheet_google.write(i, j, excel_google[i][j])
 
-       
-print(np.array(excel))
+    excel_file.save('excel.xls')
+
+# Reading and resizing the cell
+table_with_background = cv2.imread('./TestCases/4_1.jpeg')
+table = getPageWarped(table_with_background)[5]
+cells,cells_for_google = get_cells(table)
+get_excel(cells,cells_for_google)

@@ -126,25 +126,18 @@ def remove_border(img_with_border):
             j -= 1
     # border final clean
     for j in range(img_without_border.shape[1]):
-        for i in range(3):
+        for i in range(2):
             img_without_border[i][j] = 0
     for j in range(img_without_border.shape[1]):
-        for i in range(img_without_border.shape[0]-3, img_without_border.shape[0]):
+        for i in range(img_without_border.shape[0]-2, img_without_border.shape[0]):
             img_without_border[i][j] = 0
     for i in range(img_without_border.shape[0]):
-        for j in range(3):
+        for j in range(2):
             img_without_border[i][j] = 0
     for i in range(img_without_border.shape[0]):
-        for j in range(img_without_border.shape[1]-3, img_without_border.shape[1]):
+        for j in range(img_without_border.shape[1]-2, img_without_border.shape[1]):
             img_without_border[i][j] = 0
-    img_without_border = cv2.dilate(
-        img_without_border, np.ones((1, 2), np.uint8), iterations=0)  # !parameter
-    img_without_border = cv2.erode(
-        img_without_border, np.ones((1, 2), np.uint8), iterations=0)  # !parameter
-    img_without_border = cv2.dilate(
-        img_without_border, np.ones((2, 1), np.uint8), iterations=0)  # !parameter
-    img_without_border = cv2.erode(
-        img_without_border, np.ones((2, 1), np.uint8), iterations=0)  # !parameter
+    #!Add post prossecing functions
     return img_without_border
 
 
@@ -225,7 +218,7 @@ def get_cells(img):
         if((i+1) % (num_columns-1) == 0):
             cells_content.append(cell_row_content)
             cell_row_content = []
-
+    original_cells=cells_content.copy()
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
             cells_content[i][j] = cv2.adaptiveThreshold(
@@ -233,7 +226,7 @@ def get_cells(img):
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
             cells_content[i][j] = remove_border(cells_content[i][j])
-    return cells_content
+    return cells_content , original_cells
 
 
 # img = cv2.imread("TestCases/4_3.jpeg")

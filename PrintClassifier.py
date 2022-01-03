@@ -35,12 +35,12 @@ def prepare_dataset():
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
     examples = iter(test_loader)
-    example_data, example_targets = examples.next()     #hands on the first batch
+   # example_data, example_targets = examples.next()     #hands on the first batch
 
-    for i in range(6):
-        ax = plt.subplot(2,3,i+1)
-        ax.title.set_text(example_targets[i+6])
-        plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
+    # for i in range(6):
+    #     ax = plt.subplot(2,3,i+1)
+    #     ax.title.set_text(example_targets[i+6])
+    #     plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
     #plt.show()
     return train_loader, test_loader
 
