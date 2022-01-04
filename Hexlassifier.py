@@ -121,13 +121,25 @@ def predict_hex(characters, saved=True):
         torch.save(model.state_dict(), './Intelligence/HexIntelligence.pth')
 
 
-    magic_word = []
+    if(characters):
+        magic_word = []
+        magic_word_rot = []
 
-    for char in characters:
-        char = torch.from_numpy((char/255)).reshape(-1, 784).float()
-        prediction = model(char).argmax()
-        magic_word.append(lexicon[prediction.item()])
+        for char in characters:
+            char_tensor = torch.from_numpy((char/255)).reshape(-1, 784).float()
+            char_rot_tensor = torch.from_numpy(np.transpose(char)/255).reshape(-1, 784).float()
+            prediction = model(char_tensor).argmax()
+            prediction_rot = model(char_rot_tensor).argmax()
+            magic_word.append(lexicon[prediction.item()])
+            magic_word_rot.append(lexicon[prediction_rot.item()])
 
-    magic_word = ''.join(magic_word)
-    #print(magic_word)
-    return magic_word
+        magic_word = ''.join(magic_word)
+        magic_word_rot = ''.join(magic_word_rot)
+        if(magic_word_rot ==  '1'):  return '-'
+        if(all(c in '1' for c in magic_word)): return str(len(magic_word))
+        if(all(c in '1' for c in magic_word_rot)): return str(5 - len(magic_word_rot))
+
+        return magic_word
+    return ''
+
+#predict_hex([], False)

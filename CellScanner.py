@@ -10,7 +10,6 @@ from PageExtractor import getPageWarped
 import xlwt
 # makes the character into a square by padding the contour
 
-
 def make_square(char, p):
     s = max(char.shape)
     f = np.zeros((s, s), np.uint8)
@@ -20,7 +19,6 @@ def make_square(char, p):
     return image
 
 def cell_processing(cell):
-    #Finding contours (only need the external contour):
     cnts, _ = cv2.findContours(cell, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     characters = []
     for i, c in enumerate(cnts):
@@ -50,17 +48,13 @@ def get_excel(cells, cells_for_google,google=False):
             cell = cells[i][j]
             cell = imutils.resize(cell, width=500)
             characters = cell_processing(cell)
-
-            #Writing the found contour into a folder
-            #for i, char in enumerate(characters):
-            #    cv2.imwrite(f'ScannedCharacters/Char{i}{j}.jpg', char )
             cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
 
             handwritten = False
             if(handwritten):
-                cell_content = predict_hex(characters, saved=True) if characters else ''
+                cell_content = predict_hex(characters, saved=True) 
             else:
-                cell_content = predict_print(characters, saved=True) if characters else ''
+                cell_content = predict_print(characters, saved=True)
             #?(For windows)pytesseract.pytesseract.tesseract_cmd =r'C:\Users\mohamed saad\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
             cell_content_google = pytesseract.image_to_string(cells_for_google[i][j]) if google else ''
             excel_row.append(cell_content+'\n')
@@ -83,7 +77,7 @@ def get_excel(cells, cells_for_google,google=False):
     excel_file.save('excel.xls')
 
 # Reading and resizing the cell
-table_with_background = cv2.imread('./TestCases/4_1.jpeg')
+table_with_background = cv2.imread('./TestCases/Perfection.jpg')
 table = getPageWarped(table_with_background)[5]
-cells,cells_for_google = get_cells(table)
+cells,cells_for_google = get_cells(table_with_background)
 get_excel(cells,cells_for_google)

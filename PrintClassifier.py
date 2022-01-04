@@ -6,6 +6,7 @@ import torch.utils.data as utils
 import matplotlib.pyplot as plt
 import numpy as np 
 from tqdm import tqdm
+import cv2
 
 
 # Device configuration
@@ -13,11 +14,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters 
 input_size = 784 # 28x28
-hidden_size = 200
+hidden_size = 100
 num_classes = 10
 num_epochs = 2
-batch_size = 100
-learning_rate = 0.001
+batch_size = 50
+learning_rate = 0.003
 saved = True
 
 lexicon = dict([(0,'0'),(1,'1'), (2,'2'),(3,'3'),(4,'4'),(5,'5'),(6,'6'),(7,'7'),(8,'8'),(9,'9')])
@@ -34,7 +35,7 @@ def prepare_dataset():
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-    examples = iter(test_loader)
+   # examples = iter(test_loader)
    # example_data, example_targets = examples.next()     #hands on the first batch
 
     # for i in range(6):
@@ -91,9 +92,24 @@ class NeuralNet(nn.Module):
                 predicted = logits.argmax(1)                    #the highest logit is also the highest softmax probability. This has shape (100,)
                 n_correct += (predicted == labels).sum().item()
 
-            acc = 100.0 * n_correct / (len(test_loader) * 100)
+            acc = 100.0 * n_correct / (len(test_loader) * batch_size)
             print(f'Accuracy: {acc} %')
     
+
+def misclassified_seven(char):
+    horizontal_size = 20
+    vertical_size = 20
+    horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
+    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size))
+    mask1 = cv2.erode(char, verticalStructure,iterations = 1)
+    mask2 = cv2.erode(char, horizontalStructure,iterations = 1)
+    v_strength = np.sum(mask1)
+    #print(v_strength)
+    #print(h_strength)
+    #return 'x'
+    return '7' if v_strength < 500 else '1'
+
+
 def predict_print(characters, saved=True):
     train_loader, test_loader = prepare_dataset()
     model = NeuralNet(input_size, hidden_size, num_classes).to(device)      #so it's done on the GPU if available.
@@ -109,13 +125,20 @@ def predict_print(characters, saved=True):
         # Save the model
         torch.save(model.state_dict(), './Intelligence/PrintIntelligence.pth')
 
-    magic_word = []
+    if(characters):
+        magic_word = []
+        for char in characters:
+            char_tensor = torch.from_numpy((char/255)).reshape(-1, 784).float()
+            prediction = model(char_tensor).argmax()
+            number = lexicon[prediction.item()]
+            number = misclassified_seven(char) if number == '7' else number
+            magic_word.append(number)
 
-    for char in characters:
-        char = torch.from_numpy((char/255)).reshape(-1, 784).float()
-        prediction = model(char).argmax()
-        magic_word.append(lexicon[prediction.item()])
+        magic_word = ''.join(magic_word)
+        #print(magic_word)
+        return magic_word
+    return ''
 
-    magic_word = ''.join(magic_word)
-    #print(magic_word)
-    return magic_word
+#predict_print([], False)
+
+
