@@ -45,14 +45,14 @@ def preprocess_dataset():
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-    examples = iter(test_loader)
-    example_data, example_targets = examples.next()     #hands on the first batch
+    #examples = iter(test_loader)
+    #example_data, example_targets = examples.next()     #hands on the first batch
 
-    for i in range(6):
-        ax = plt.subplot(2,3,i+1)
-        ax.title.set_text(example_targets[i+6])
-        plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
-    plt.show()
+    # for i in range(6):
+    #     ax = plt.subplot(2,3,i+1)
+    #     ax.title.set_text(example_targets[i+6])
+    #     plt.imshow(example_data[i+6].squeeze(), cmap='gray')  #first 6 images in the first batch. Squeeze so 1x28x28 -> 28x28
+    # plt.show()
     return train_loader, test_loader
 
 
@@ -122,12 +122,20 @@ def predict_hex(characters, saved=True):
 
 
     magic_word = []
+    magic_word_rot = []
 
     for char in characters:
-        char = torch.from_numpy((char/255)).reshape(-1, 784).float()
-        prediction = model(char).argmax()
+        char_tensor = torch.from_numpy((char/255)).reshape(-1, 784).float()
+        char_rot_tensor = torch.from_numpy(np.transpose(char)/255).reshape(-1, 784).float()
+        prediction = model(char_tensor).argmax()
+        prediction_rot = model(char_rot_tensor).argmax()
         magic_word.append(lexicon[prediction.item()])
+        magic_word_rot.append(lexicon[prediction_rot.item()])
 
     magic_word = ''.join(magic_word)
-    print(magic_word)
+    magic_word_rot = ''.join(magic_word_rot)
+    if(magic_word_rot ==  '1'):  return '0'
+    if(all(c in '1' for c in magic_word)): return str(len(magic_word))
+    if(all(c in '1' for c in magic_word_rot)): return str(5 - len(magic_word_rot))
+
     return magic_word

@@ -39,21 +39,17 @@ def cell_processing(cell):
 
 
 #Reading and resizing the cell
-cell = cv2.imread('./Samples/Digits.png')
+cell = cv2.imread('./Samples/hori_hard.jpeg')
 cell = imutils.resize(cell, width=500)
 cell, cell_t, characters = cell_processing(cell)
 
-#Displaying them
-cell = cv2.bitwise_and(cell, cell, mask=cell_t)
-cv2.imshow('Thresholded Image', cell_t )
-cv2.waitKey()
 
-handwritten = False
+handwritten = True
 
 if(handwritten):
     cell_content = predict_hex(characters, saved=True)
 else:
     cell_content = predict_print(characters, saved=True)
 
-cell_content = pytesseract.image_to_string(Image.open('./Samples/Digits.png'))
+#cell_content = pytesseract.image_to_string(Image.open('./Samples/Digits.png'))
 print(cell_content)
