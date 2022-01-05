@@ -1,5 +1,5 @@
 
-# AutoGrader (TableToExcel)
+# AutoGrader (Table/BubbleToExcel)
 
 ## Getting Started
 
