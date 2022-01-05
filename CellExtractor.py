@@ -126,17 +126,18 @@ def remove_border(img_with_border):
             img_without_border[i][j] = 0
             j -= 1
     # border final clean
+    depth=int(img_with_border.shape[0]/100*10)
     for j in range(img_without_border.shape[1]):
-        for i in range(2):
+        for i in range(depth):
             img_without_border[i][j] = 0
     for j in range(img_without_border.shape[1]):
-        for i in range(img_without_border.shape[0]-2, img_without_border.shape[0]):
+        for i in range(img_without_border.shape[0]-int(depth*0.5), img_without_border.shape[0]):
             img_without_border[i][j] = 0
     for i in range(img_without_border.shape[0]):
-        for j in range(2):
+        for j in range(depth):
             img_without_border[i][j] = 0
     for i in range(img_without_border.shape[0]):
-        for j in range(img_without_border.shape[1]-2, img_without_border.shape[1]):
+        for j in range(img_without_border.shape[1]-int(depth*0.5), img_without_border.shape[1]):
             img_without_border[i][j] = 0
     #!Add post prossecing functions
     return img_without_border
@@ -224,7 +225,7 @@ def get_cells(img):
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
             cells_content[i][j] = cv2.adaptiveThreshold(
-                cells_content[i][j], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 15, 7)  # !parameter
+                cells_content[i][j], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 15, 12)  # !parameter
     for i in range(len(cells_content)):
         for j in range(len(cells_content[i])):
             cells_content[i][j] = remove_border(cells_content[i][j])

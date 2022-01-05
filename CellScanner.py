@@ -46,7 +46,6 @@ def get_excel(cells, cells_for_google,google=False):
             cell = imutils.resize(cell, width=500)
             characters = cell_processing(cell)
             cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
-
             handwritten = True if (j > 3 ) else False
             if(handwritten):
                 cell_content = predict_hex(characters, saved=True) 

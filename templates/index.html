@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Index</title>
+    <link rel="stylesheet" href="./dist/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="/static/icon.png">
+    <title>Home</title>
   </head>
   <body>
-    Hello World.
+    <div class="logo">
+      <a href="/">
+        <h1><span>T</span>able <span>T</span>o<span> E</span>xcel</h1>
+      </a>    </div>
+    <div class="content">
+      <p>
+        <span>Step 1)</span> You carefully take a picture of your table. The table can include all sorts of numbers and some letters.
+        <br>
+        <span>Step 2)</span> Click Start Now!
+        <br>
+        <span>Step 3)</span> Upload your image.
+        <br>
+        <span>Step 4)</span> Once our magical algorithm is done a download button for the corresponding excel file should appear.
+      </p>
+    </div>
+    <div class="action"><a href="/upload">Start Now!</a></div>
   </body>
 </html>

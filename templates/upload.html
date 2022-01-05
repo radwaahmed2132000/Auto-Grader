@@ -1,33 +1,50 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Upload Image</title>
+    <title>Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="/static/icon.png">
   </head>
   <body>
 
+    <div class="logo-top">
+      <a href="/">
+        <h1><span>T</span>able <span>T</span>o<span> E</span>xcel</h1>
+      </a>
+    </div>
+    
     {% if msg %}
-    <h1>{{ msg }}</h1>
+    <h1 class="error-msg">{{ msg }}</h1>
     {% endif %}
-    
-    <h1>Upload new File</h1>
-    
-    <form method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
+ 
+    <div class="hero">
+      <div class="upload">
+        <h2>Upload Your Image</h2>
+        <form method=post enctype=multipart/form-data>
+             <div class="choose"><span>Choose Your Image</span><input type=file name=file class="file-btn"></div>
+             <div class="up" id="upload"><span>Start Doing the Magic!</span><input type=submit value=Upload class="up-btn" ></div>
+        </form>
+      </div>
+      
+      <div class="output">
+        {% if extracted_text %}
+          <p> Done! Hope you're satisfied with the result.</p>
+        {% else %}
+          <p id="loading">Hold tight. We're working hard to give you the best results!</p>
+        {% endif %}
+        {% if img_src %}
+        <img class="user-img" src="{{ img_src }}">
+        <div class="download-btn"><a href="download" download> Download your Excel File </a></div>
+      {% endif %}
+      </div>
+    </div>
 
-    <h1>Result:</h1>
-    {% if img_src %}
-      <img src="{{ img_src }}">
-      <a href="download" download> Click to Download </a>    
-    {% endif %}
-    
-    {% if extracted_text %}
-      <p> The extracted text from the image above is: <b> {{ extracted_text }} </b></p>
-    
-    {% else %}
-      The extracted text will be displayed here
-    {% endif %}
   </body>
 </html>
+
+<script>
+  document.getElementById("upload").addEventListener("click", function(){
+  document.getElementById("loading").style.display = "block";
+});
+</script>
     
