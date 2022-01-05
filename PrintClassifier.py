@@ -111,13 +111,13 @@ def misclassified_seven(char):
 
 
 def predict_print(characters, saved=True):
-    train_loader, test_loader = prepare_dataset()
     model = NeuralNet(input_size, hidden_size, num_classes).to(device)      #so it's done on the GPU if available.
 
     # Load or Train the model
     if saved:
         model.load_state_dict(torch.load('./Intelligence/PrintIntelligence.pth'))
     else:
+        train_loader, test_loader = prepare_dataset()
         # Train the model
         model.train(num_epochs, train_loader)
         # Test the model

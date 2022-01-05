@@ -106,13 +106,13 @@ class NeuralNet(nn.Module):
     
 
 def predict_hex(characters, saved=True):
-    train_loader, test_loader = preprocess_dataset()
     model = NeuralNet(input_size, hidden_size, num_classes).to(device)      #so it's done on the GPU if available.
 
     # Load or Train the model
     if saved:
         model.load_state_dict(torch.load('./Intelligence/HexIntelligence.pth'))
     else:
+        train_loader, test_loader = preprocess_dataset()
         #train
         model.train(num_epochs, train_loader)
         # Test the model
@@ -142,4 +142,4 @@ def predict_hex(characters, saved=True):
         return magic_word
     return ''
 
-predict_hex([], False)
+#predict_hex([], False)
