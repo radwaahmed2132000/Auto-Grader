@@ -37,9 +37,11 @@ def showHist(img):
     bar(imgHist[1].astype(np.uint8), imgHist[0], width=0.8, align='center')
 
 # 
-def reorderPoints(points):
-
-    points = points.reshape((4, 2))
+def reorderPoints(points,):
+    # print('points= ',points)
+    print(len(points))
+    points = points.reshape((len(points), 2))
+    # The paper should only have 4 points 
     newPoints = np.zeros((4, 1, 2), dtype=np.int32)
     add = points.sum(1)
 
@@ -48,7 +50,7 @@ def reorderPoints(points):
     diff = np.diff(points, axis=1)
     newPoints[1] =points[np.argmin(diff)]
     newPoints[2] = points[np.argmax(diff)]
-
+    newPoints
     return newPoints
 
 # 
@@ -80,6 +82,9 @@ def getPageWarped(img, thresh1=180):
     imgHeight = img.shape[0]
     imgWidth = img.shape[1]
 
+    if imgWidth > 1500:
+        img = cv2.resize(img, width=1500)
+
     # First: Convert the image from BGR (Yes, images in OpenCV 2 are in BGR not RGB) to Grayscale
     grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -110,7 +115,7 @@ def getPageWarped(img, thresh1=180):
     print('Total Area:', imgHeight*imgWidth)
     print('Condition: ',biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth)
 
-    if biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth:
+    if biggestContour.size != 0 and maxArea>0.1*imgHeight*imgWidth:
         biggestContour= reorderPoints(biggestContour)
         imgWithBiggestContour = img.copy()
         cv2.drawContours(imgWithBiggestContour, biggestContour, -1, (0, 255, 0), 20)
