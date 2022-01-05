@@ -29,3 +29,5 @@ data/.DS_Store
 __pycache__/CellScanner.cpython-39.pyc
 __pycache__/Hexlassifier.cpython-39.pyc
 __pycache__/PrintClassifier.cpython-39.pyc
+*.pyc
+*.pyc

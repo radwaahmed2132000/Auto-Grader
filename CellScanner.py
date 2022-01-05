@@ -19,6 +19,7 @@ def make_square(char, p):
     return image
 
 def cell_processing(cell):
+    cell_area = len(cell) * len(cell[0])
     cnts, _ = cv2.findContours(cell, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     characters = []
     for i, c in enumerate(cnts):
@@ -29,21 +30,17 @@ def cell_processing(cell):
         cv2.rectangle(cell, (x, y), (x + w, y + h), (100,0,0), 2)
     if(len(characters) != 0):
         max_area = max(characters,key=lambda by_area:by_area[2])[2]          # the area of the larget contour
-        characters = [c for c in characters if c[2] > 0.2 * max_area]        #make 0.2 bigger to be more restrictive.
+        characters = [c for c in characters if c[2] > 0.2 * max_area and c[2] > 0.005 * cell_area]        #make 0.2 bigger to be more restrictive.
         characters.sort(key=lambda by_x: by_x[1])
         characters = [c[0] for c in characters]
-
     return characters
 
 # the following should be a loop.
 def get_excel(cells, cells_for_google,google=False):
-    rows = len(cells)
-    columns = len(cells[0])
-    excel = []
-    excel_google=[]
+    rows, columns = len(cells), len(cells[0])
+    excel, excel_google = [], []
     for i in range(0, rows):
-        excel_row = []
-        excel_google_row = []
+        excel_row, excel_google_row = [], []
         for j in range(0, columns):
             cell = cells[i][j]
             cell = imutils.resize(cell, width=500)
@@ -58,7 +55,7 @@ def get_excel(cells, cells_for_google,google=False):
             #?(For windows)pytesseract.pytesseract.tesseract_cmd =r'C:\Users\mohamed saad\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
             cell_content_google = pytesseract.image_to_string(cells_for_google[i][j]) if google else ''
             excel_row.append(cell_content+'\n')
-            excel_google_row.append(cell_content_google)
+            excel_google_row.append(cell_content_google+'\n')
         excel_google.append(excel_google_row)
         excel.append(excel_row)
 
@@ -77,7 +74,13 @@ def get_excel(cells, cells_for_google,google=False):
     excel_file.save('excel.xls')
 
 # Reading and resizing the cell
-table_with_background = cv2.imread('./TestCases/Perfection.jpg')
-table = getPageWarped(table_with_background)[5]
-cells,cells_for_google = get_cells(table_with_background)
-get_excel(cells,cells_for_google)
+#table_with_background = cv2.imread('./TestCases/Perfection.jpg')
+
+def tableToExcel(filename):
+    table_with_background = Image.open(filename)
+    table_with_background = cv2.cvtColor(np.array(table_with_background), cv2.COLOR_RGB2BGR)
+    #table = getPageWarped(table_with_background)[5]
+    #cv2.imwrite('Table.jpg', table)
+    cells,cells_for_google = get_cells(table_with_background)
+    get_excel(cells,cells_for_google, google=True)
+    return 'Its a GGWP Scenario'

@@ -1,4 +1,5 @@
 import cv2
+import imutils
 import numpy as np
 import matplotlib.pyplot as plt
 from PageExtractor import getPageWarped
@@ -142,17 +143,18 @@ def remove_border(img_with_border):
 
 
 def get_cells(img):
+    img=imutils.resize(img,height=2000)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_binary = cv2.adaptiveThreshold(gray, 255,
                                        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)  # !parameter
     kernal_width = 3  # !Parameter
-    iterations = 10  # !Parameter
+    iterations = 20  # !Parameter
     kernel = np.ones((1, kernal_width), np.uint8)
     img_horizontal = cv2.erode(img_binary, kernel, iterations=iterations)
     img_horizontal = cv2.dilate(img_horizontal, kernel, iterations=iterations)
     num_rows = transition_per_column(img_horizontal)
     kernal_height = 3  # !Parameter
-    iterations = 10  # !Parameter
+    iterations = 20  # !Parameter
     kernel = np.ones((kernal_height, 1), np.uint8)
     img_vertical = cv2.erode(img_binary, kernel, iterations=iterations)
     img_vertical = cv2.dilate(img_vertical, kernel, iterations=iterations)
