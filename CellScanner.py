@@ -47,7 +47,7 @@ def get_excel(cells, cells_for_google,google=False):
             characters = cell_processing(cell)
             cv2.imwrite(f'ScannedCells/Cell{i}_{j}.jpg', cell)
 
-            handwritten = False
+            handwritten = True if (j > 3 ) else False
             if(handwritten):
                 cell_content = predict_hex(characters, saved=True) 
             else:
@@ -71,7 +71,7 @@ def get_excel(cells, cells_for_google,google=False):
             sheet.write(i, j, excel[i][j])
             sheet_google.write(i, j, excel_google[i][j])
 
-    excel_file.save('excel.xls')
+    excel_file.save('table.xls')
 
 # Reading and resizing the cell
 #table_with_background = cv2.imread('./TestCases/Perfection.jpg')
@@ -80,7 +80,7 @@ def tableToExcel(filename):
     table_with_background = Image.open(filename)
     table_with_background = cv2.cvtColor(np.array(table_with_background), cv2.COLOR_RGB2BGR)
     #table = getPageWarped(table_with_background)[5]
-    #cv2.imwrite('Table.jpg', table)
+    cv2.imwrite('Table.jpg', table_with_background)
     cells,cells_for_google = get_cells(table_with_background)
     get_excel(cells,cells_for_google, google=True)
     return 'Its a GGWP Scenario'

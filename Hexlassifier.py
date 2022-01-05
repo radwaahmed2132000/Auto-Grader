@@ -25,7 +25,7 @@ def preprocess_dataset():
     transforms.Lambda(lambda img: transforms.functional.rotate(img, angle=90)),
     transforms.RandomVerticalFlip(p=1)])
 
-    train_dataset = torchvision.datasets.EMNIST(root='./data',split='balanced', train=True, transform=preprocessing, download=False)
+    train_dataset = torchvision.datasets.EMNIST(root='./data',split='balanced', train=True, transform=preprocessing, download=True)
     test_dataset = torchvision.datasets.EMNIST(root='./data', split='balanced', train=False, transform=preprocessing)
 
 
@@ -118,7 +118,7 @@ def predict_hex(characters, saved=True):
         # Test the model
         model.test(test_loader)
         # Save the model
-        torch.save(model.state_dict(), './Intelligence/HexIntelligence.pth')
+        #torch.save(model.state_dict(), './Intelligence/HexIntelligence.pth')
 
 
     if(characters):
@@ -142,4 +142,4 @@ def predict_hex(characters, saved=True):
         return magic_word
     return ''
 
-#predict_hex([], False)
+predict_hex([], False)

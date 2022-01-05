@@ -48,7 +48,7 @@ def upload_page():
 @app.route('/download')
 def downloadFile ():
     #For windows you need to use drive name [ex: F:/Example.pdf]
-    path = "/Users/essam/Documents/GitHub/python-ocr-example/excel.xls"
+    path = "/Users/essam/Documents/GitHub/auto-grader/table.xls"
     return send_file(path, as_attachment=True)
 
 

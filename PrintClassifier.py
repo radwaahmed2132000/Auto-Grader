@@ -123,7 +123,7 @@ def predict_print(characters, saved=True):
         # Test the model
         model.test(test_loader)
         # Save the model
-        torch.save(model.state_dict(), './Intelligence/PrintIntelligence.pth')
+        #torch.save(model.state_dict(), './Intelligence/PrintIntelligence.pth')
 
     if(characters):
         magic_word = []
