@@ -7,6 +7,7 @@ from skimage.exposure import histogram
 import os
 import numpy as np
 import cv2
+
 # From the labs:
 # Show the figures / plots inside the notebook
 def show_images(images,titles=None):
@@ -36,9 +37,11 @@ def showHist(img):
     bar(imgHist[1].astype(np.uint8), imgHist[0], width=0.8, align='center')
 
 # 
-def reorderPoints(points):
-
-    points = points.reshape((4, 2))
+def reorderPoints(points,):
+    # print('points= ',points)
+    print(len(points))
+    points = points.reshape((len(points), 2))
+    # The paper should only have 4 points 
     newPoints = np.zeros((4, 1, 2), dtype=np.int32)
     add = points.sum(1)
 
@@ -47,7 +50,7 @@ def reorderPoints(points):
     diff = np.diff(points, axis=1)
     newPoints[1] =points[np.argmin(diff)]
     newPoints[2] = points[np.argmax(diff)]
-
+    newPoints
     return newPoints
 
 # 
@@ -79,6 +82,9 @@ def getPageWarped(img, thresh1=180):
     imgHeight = img.shape[0]
     imgWidth = img.shape[1]
 
+    if imgWidth > 1500:
+        img = cv2.resize(img, width=1500)
+
     # First: Convert the image from BGR (Yes, images in OpenCV 2 are in BGR not RGB) to Grayscale
     grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -104,11 +110,12 @@ def getPageWarped(img, thresh1=180):
 
     # Seventh: Find the biggest contour.
     biggestContour, maxArea = getBiggestContour(contours)
-    # print('Max Area: ', maxArea)
-    # print('Total Area:', imgHeight*imgWidth)
-    # print('Condition: ',biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth)
+    notWarped = True
+    print('Max Area: ', maxArea)
+    print('Total Area:', imgHeight*imgWidth)
+    print('Condition: ',biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth)
 
-    if biggestContour.size != 0 and maxArea>0.15*imgHeight*imgWidth:
+    if biggestContour.size != 0 and maxArea>0.1*imgHeight*imgWidth:
         biggestContour= reorderPoints(biggestContour)
         imgWithBiggestContour = img.copy()
         cv2.drawContours(imgWithBiggestContour, biggestContour, -1, (0, 255, 0), 20)
@@ -121,24 +128,20 @@ def getPageWarped(img, thresh1=180):
         WarpedColoredImage=WarpedColoredImage[20:WarpedColoredImage.shape[0] - 20, 20:WarpedColoredImage.shape[1] - 20]
         WarpedColoredImage = cv2.resize(WarpedColoredImage,(imgWidth,imgHeight))
 
-        # Last but not least: Apply adaptive thresholding
-        WarpedGrayImg = cv2.cvtColor(WarpedColoredImage,cv2.COLOR_BGR2GRAY)
-        AdaptiveThreshedImg= cv2.adaptiveThreshold(WarpedGrayImg, 255, 1, 1, 7, 2)
-        AdaptiveThreshedImg = cv2.bitwise_not(AdaptiveThreshedImg)
-        AdaptiveThreshedImg=cv2.medianBlur(AdaptiveThreshedImg,3)
-
         imageArr = ([img,grayImg,thresholdedImg,imgWithContours,
-                        imgWithBiggestContour,WarpedColoredImage, WarpedGrayImg,AdaptiveThreshedImg])
-
+                        imgWithBiggestContour,WarpedColoredImage])
+        notWarped = False
     # elif thresh1>100:
     #     imageArr = getPageWarped(img, filename, thresh1-10)
     else:
-        imageArr = ([img,grayImg,thresholdedImg,imgWithContours, img, img, img, img])
+        imageArr = ([img,grayImg,thresholdedImg,imgWithContours, img, img])
+        notWarped = True
 
-    # lables = ["Original","Gray","Threshold with Canny","Contours","Biggest Contour","Warp Prespective","Warp Gray","Adaptive Threshold"]
+    # lables = ["Original","Gray","Threshold with Canny","Contours","Biggest Contour","Warp Prespective"]
     # for i in range(len(imageArr)):
     #     imageArr[i] = cv2.cvtColor(imageArr[i],cv2.COLOR_BGR2RGB)
     #     cv2.imwrite('Output_Images/'+lables[i]+'_'+filename,imageArr[i])
     # show_images(imageArr, lables)
 
-    return imageArr
+    return imageArr, notWarped
+

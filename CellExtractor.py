@@ -236,7 +236,8 @@ def get_cells(img):
 # plt.imshow(img, cmap='gray')
 # plt.show()
 
-# cropped = getPageWarped(img)[5]
+# imgArr, notWarped = getPageWarped(img)[5]
+# cropped = imgArr[5]
 # plt.figure(figsize=(10, 10))
 # plt.imshow(cropped, cmap='gray')
 # plt.show()
