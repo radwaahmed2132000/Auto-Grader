@@ -7,7 +7,7 @@ from skimage.exposure import histogram
 import os
 import numpy as np
 import cv2
-
+import imutils
 # From the labs:
 # Show the figures / plots inside the notebook
 def show_images(images,titles=None):
@@ -83,7 +83,7 @@ def getPageWarped(img, thresh1=180):
     imgWidth = img.shape[1]
 
     if imgWidth > 1500:
-        img = cv2.resize(img, width=1500)
+        img = imutils.resize(img, width=1500)
 
     # First: Convert the image from BGR (Yes, images in OpenCV 2 are in BGR not RGB) to Grayscale
     grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

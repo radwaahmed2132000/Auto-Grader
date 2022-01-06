@@ -51,7 +51,7 @@ def get_excel(cells, cells_for_google,google=False):
                 cell_content = predict_hex(characters, saved=True) 
             else:
                 cell_content = predict_print(characters, saved=True)
-            #?(For windows)pytesseract.pytesseract.tesseract_cmd =r'C:\Users\mohamed saad\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+            #pytesseract.pytesseract.tesseract_cmd =r'C:\Users\mohamed saad\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
             cell_content_google = pytesseract.image_to_string(cells_for_google[i][j]) if google else ''
             excel_row.append(cell_content+'\n')
             excel_google_row.append(cell_content_google+'\n')
@@ -78,8 +78,8 @@ def get_excel(cells, cells_for_google,google=False):
 def tableToExcel(filename):
     table_with_background = Image.open(filename)
     table_with_background = cv2.cvtColor(np.array(table_with_background), cv2.COLOR_RGB2BGR)
-    #table = getPageWarped(table_with_background)[5]
-    cv2.imwrite('Table.jpg', table_with_background)
+    table = getPageWarped(table_with_background)[0][5]
+    cv2.imwrite('Table.jpg', table)
     cells,cells_for_google = get_cells(table_with_background)
-    get_excel(cells,cells_for_google, google=True)
+    get_excel(cells,cells_for_google,google=True)
     return 'Its a GGWP Scenario'
