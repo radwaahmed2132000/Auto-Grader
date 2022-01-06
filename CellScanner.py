@@ -76,10 +76,13 @@ def get_excel(cells, cells_for_google,google=False):
 #table_with_background = cv2.imread('./TestCases/Perfection.jpg')
 
 def tableToExcel(filename):
+    bad_img = True
     table_with_background = Image.open(filename)
     table_with_background = cv2.cvtColor(np.array(table_with_background), cv2.COLOR_RGB2BGR)
-    table = getPageWarped(table_with_background)[0][5]
-    cv2.imwrite('Table.jpg', table)
+    cv2.imwrite('Table1.jpg', table_with_background)
+    table_with_background = getPageWarped(table_with_background)[0][5] if bad_img else table_with_background
+    table_with_background = cv2.rotate(table_with_background, -cv2.ROTATE_90_CLOCKWISE) if bad_img else table_with_background
+    cv2.imwrite('Table.jpg', table_with_background)
     cells,cells_for_google = get_cells(table_with_background)
     get_excel(cells,cells_for_google,google=True)
     return 'Its a GGWP Scenario'
