@@ -126,7 +126,7 @@ def remove_border(img_with_border):
             img_without_border[i][j] = 0
             j -= 1
     # border final clean
-    depth=int(img_with_border.shape[0]/100*10)
+    depth=int(min(img_with_border.shape[0],img_with_border.shape[1])/100*10)
     for j in range(img_without_border.shape[1]):
         for i in range(depth):
             img_without_border[i][j] = 0
