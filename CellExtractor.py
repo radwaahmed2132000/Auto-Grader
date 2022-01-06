@@ -17,7 +17,8 @@ def transition_per_row(img):
                     new_region = False
             if(~img[i][j]):
                 new_region = True
-        trans_array.append(trans)
+        if trans!=0 :
+            trans_array.append(trans)
     trans_median = np.median(trans_array)
     return int(trans_median)
 
@@ -34,7 +35,8 @@ def transition_per_column(img):
                     new_region = False
             if(~img[i][j]):
                 new_region = True
-        trans_array.append(trans)
+        if trans!=0 :
+            trans_array.append(trans)
     trans_median = np.median(trans_array)
     return int(trans_median)
 
