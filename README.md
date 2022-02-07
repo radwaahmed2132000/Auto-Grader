@@ -50,7 +50,7 @@ $ python app.py
 <img src="/Demo/Survive.png" width="100%" title="vertical lines should return their count, horizontal lines should return 5 - count" >
 </div>
 
-### For each cell we scan and before further processing, we feed the result int Google's Tesseract OCR (which isn't designed for this type of task) and to our classifier.
+#### For each cell we scan and before further processing, we feed the result int Google's Tesseract OCR (which isn't designed for this type of task) and to our classifier.
 
 ### OCR Results
 <img src="/Demo/Google.png" width="100%" title="vertical lines should return their count, horizontal lines should return 5 - count" >
