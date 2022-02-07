@@ -31,3 +31,4 @@ __pycache__/Hexlassifier.cpython-39.pyc
 __pycache__/PrintClassifier.cpython-39.pyc
 *.pyc
 *.pyc
+.DS_Store
