@@ -3,7 +3,7 @@
 This won't help you convert .doc, .pdf, .ppt to excel. It will help you convert the actual paper to excel! Be it a table or a bubble sheet just take a picture of it and watch it magically become the original excel file!
 
 >This serves as the project for the image processing course taught to juniors in CUFE for 2022.
-## Technologies
+## Technologies 📚
 <br>
 <div align='center'>
 <img src="/Demo/python.png" width="10%"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/Demo/pytorch.png" title="Your Github should be on dark mode." width="30%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/Demo/image.png" width="10%"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/Demo/flask.png" width="30%">
@@ -14,7 +14,7 @@ This won't help you convert .doc, .pdf, .ppt to excel. It will help you convert 
 </div>
 
 
-## Running the Application
+## Running the Application 🚀
 
 1. Clone the repository
 ```
@@ -35,17 +35,17 @@ $ pip install -r requirements.txt
 ```
 $ python app.py
 ```
-## Quick Demo
+## Quick Demo 🖥️
 ### Ready?
 ![image](https://user-images.githubusercontent.com/49572294/148289714-b572b7a7-60e9-431c-b3d0-7242ae83a27c.png)
 ### Let's go!
 <img src="/Demo/Video.gif" >
 
-### Classification Accuracy
+### Classification Accuracy ✅
 ![image](https://user-images.githubusercontent.com/49572294/152766243-71ce0e17-c4f9-4774-b51d-a9676cad84b9.png)
 <img src="/Demo/Handwritten.png" width="41%" title="vertical lines should return their count, horizontal lines should return 5 - count" >
 
-### Serious Challenge?
+### Serious Challenge ❓
 <div align="center">
 <img src="/Demo/Survive.png" width="100%" title="vertical lines should return their count, horizontal lines should return 5 - count" >
 </div>
