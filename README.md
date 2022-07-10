@@ -75,5 +75,8 @@ ANNs were the only deep learning method allowed, two classifiers were designed. 
 ## System Design & More
 
 Check the proposal document attached.
+## Collaborators
+<!-- readme: collaborators -start -->
+<!-- readme: collaborators -end -->
 
 
