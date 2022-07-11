@@ -1,6 +1,6 @@
 
 # AutoGrader (Paper2Excel)
-This won't help you convert .doc, .pdf, .ppt to excel. It will help you convert the actual paper to excel! Be it a table or a bubble sheet just take a picture of it and watch it magically become the original excel file!
+This won't help you convert .doc, .pdf, .ppt to excel. It will help you convert the actual paper to excel! Be it a table or a bubble sheet just take a picture of it and watch it magically becomes the original excel file!
 
 >This serves as the project for the image processing course taught to juniors in CUFE for 2022.
 ## Technologies 📚
